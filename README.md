@@ -40,7 +40,7 @@ is reported as a result rather than hidden as a blank.
 
 ## Where to download
 
-A packaged build needs nothing installed — no Java, no Python, and is located under [releases](https://github.com/PrideInt/PGxEngine/releases):
+A packaged build needs nothing installed — no Java, no Python, and is located under [releases](https://github.com/PrideInt/PGxEngine/releases).
 
 It starts its own engine on the loopback interface, picks a free port, and
 stops the engine when the window closes. To build it, see
@@ -60,7 +60,7 @@ You could also run the engine application directly from source rather than using
 | Java | JDK 17 or newer (client only) |
 | Everything else | `pip install -r requirements.txt` |
 
-JavaFX is fetched by Maven; nothing to install by hand.
+JavaFX is fetched by Apache Maven; nothing to install by hand.
 
 ### 1. Build the knowledge base
 
@@ -124,10 +124,13 @@ engine, so it runs with nothing else started.
 
 ---
 
-## Distributions
+## Build Distribution
 
 ```bash
-bash packaging/build.sh                                      # any platform
+bash packaging/build.sh  # any Linux or macOS (UNIX-based) system
+```
+
+```bash
 powershell -ExecutionPolicy Bypass -File packaging\build.ps1  # Windows only
 ```
 
@@ -138,11 +141,11 @@ powershell -ExecutionPolicy Bypass -File packaging\build.ps1  # Windows only
 
 Both carry their own frozen engine and a copy of the knowledge base, and both
 start the engine themselves. Neither cross-builds: run the script on the
-platform you are targeting. See [`packaging/README.md`](packaging/README.md).
+platform you are targeting.
 
 ---
 
-## Layout
+## Source Layout
 
 ```
 pgx/
@@ -158,18 +161,13 @@ pgx/
   frequency.py     Hardy-Weinberg priors and phenotype posteriors
 client/            JavaFX client (Java 17, JavaFX 21)
 packaging/         build scripts and PyInstaller spec
-docs/scope.md      scope, method, findings, limitations
-tests/             128 tests, offline against a fixture database
-tools/             validation and cohort scripts
 ```
 
 ## Tests
 
-```bash
-python -m pytest tests -q
-```
+TBA.
 
-No network and no `data/pgx.db` required — the suite builds its own fixture.
+No network and no `data/pgx.db` required, the suite builds its own fixture.
 
 ## Validation
 
@@ -187,21 +185,9 @@ so `*1/*1` from a two-allele panel and `*1/*1` from sequencing print
 identically and mean different things. Two experiments measure that gap against
 GeT-RM, whose true diplotypes are known.
 
-```bash
-python tools/panel_experiment.py --db data/pgx.db       # what a panel costs
-python tools/posterior_experiment.py --db data/pgx.db   # does modelling it help
-```
-
 Phenotype accuracy when each true diplotype is masked down to what a given
-panel would have reported, then re-resolved:
-
-| Gene | no panel | core | common | broad |
-| --- | --- | --- | --- | --- |
-| CYP2C19 | 0.488 | 0.794 | 0.952 | 0.988 |
-| CYP2D6 | 0.430 | 0.796 | 0.837 | 0.864 |
-| CYP2B6 | 0.463 | 0.860 | 0.904 | 0.912 |
-
-The posterior is deliberately not exposed through the report contract: on these
+panel would have reported, then re-resolved. The posterior is deliberately 
+not exposed through the report contract: on these
 results it would improve one gene of three and degrade another. 
 
 ## The model
