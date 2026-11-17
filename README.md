@@ -44,7 +44,7 @@ A packaged build needs nothing installed — no Java, no Python, and is located 
 
 It starts its own engine on the loopback interface, picks a free port, and
 stops the engine when the window closes. To build it, see
-[Distributions](#distributions).
+[Build Distributions](#build-distributions).
 
 ---
 
