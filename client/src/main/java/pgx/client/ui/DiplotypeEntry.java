@@ -52,7 +52,7 @@ public class DiplotypeEntry extends VBox {
     private final Map<String, String> selected = new LinkedHashMap<>();
     private final Map<String, Label> values = new LinkedHashMap<>();
 
-    private Runnable onChange = () -> { };
+    private Runnable onChange = () -> {};
 
     public DiplotypeEntry(PgxEngine engine, Consumer<String> onError) {
         this.engine = engine;
@@ -106,8 +106,6 @@ public class DiplotypeEntry extends VBox {
         loadGenes();
     }
 
-    // ------------------------------------------------------------------
-
     /** The diplotypes picked so far, as the engine expects them. */
     public Map<String, String> diplotypes() {
         return new LinkedHashMap<>(selected);
@@ -121,8 +119,6 @@ public class DiplotypeEntry extends VBox {
     public void setOnChange(Runnable onChange) {
         this.onChange = onChange == null ? () -> { } : onChange;
     }
-
-    // ------------------------------------------------------------------
 
     private void loadGenes() {
         Task<List<String>> task = new Task<>() {
@@ -220,8 +216,6 @@ public class DiplotypeEntry extends VBox {
         ToggleButton tab = (ToggleButton) geneGroup.getSelectedToggle();
         return tab == null ? null : (String) tab.getUserData();
     }
-
-    // ------------------------------------------------------------------
 
     /** Diplotype left, phenotype right, so the star alleles stay in a column. */
     private static class OptionCell extends ListCell<PgxReport.DiplotypeOption> {

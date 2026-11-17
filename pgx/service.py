@@ -2,9 +2,6 @@ import argparse
 import os
 import sys
 
-
-# // PATHS
-
 def base_dir():
     """Where pgx.db is expected to sit.
 
@@ -16,7 +13,6 @@ def base_dir():
         return os.path.dirname(os.path.abspath(sys.executable))
     return os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-
 def find_database(given):
     if given:
         return os.path.abspath(given)
@@ -27,9 +23,6 @@ def find_database(given):
         if os.path.exists(path):
             return path
     return os.path.join(root, "pgx.db")
-
-
-# // ENTRY POINT
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
@@ -63,7 +56,6 @@ def main(argv=None):
     # nothing about it should be reachable from another machine.
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

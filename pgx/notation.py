@@ -32,12 +32,10 @@ WELL_FORMED = re.compile(r"^[^/]+/[^/]+$")
 UNKNOWN_COPIES = re.compile(r"[Xx]N\b")
 UPPERCASE_DUPLICATION = re.compile(r"X(\d+)")
 
-
 # Split a value that offers two readings, e.g. "*1/*4 or *4/*17"
 def split_alternatives(text):
     parts = re.split(r"\s+or\s+", text, flags=re.IGNORECASE)
     return [part.strip() for part in parts if part.strip()]
-
 
 # Expand "(*2;*10)" into one candidate per listed allele
 def expand_semicolons(text):
@@ -53,7 +51,6 @@ def expand_semicolons(text):
         for option in options
         if option
     ]
-
 
 def normalize_getrm(raw):
     """Translate one GeT-RM consensus call into CPIC diplotype candidates.
@@ -143,7 +140,6 @@ def normalize_getrm(raw):
     note = notes[0] if notes else PLAIN
 
     return {"raw": raw, "candidates": resolved, "note": note}
-
 
 # Unknown copy number means at least two copies, which CPIC splits between an
 # exact x2 and a bucketed x>=3. Offer both rather than choosing one.

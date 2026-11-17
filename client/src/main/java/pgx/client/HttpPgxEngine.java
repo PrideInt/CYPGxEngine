@@ -107,9 +107,7 @@ public class HttpPgxEngine implements PgxEngine {
         JsonNode root = tree(get(path), path);
 
         try {
-            return mapper.convertValue(
-                    root.path("drugs"),
-                    new TypeReference<List<PgxReport.DrugSummary>>() {});
+            return mapper.convertValue(root.path("drugs"), new TypeReference<List<PgxReport.DrugSummary>>() {});
         } catch (Exception e) {
             throw new PgxException("The engine returned an unreadable drug list.", e);
         }

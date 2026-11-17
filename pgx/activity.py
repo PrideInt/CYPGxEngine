@@ -14,7 +14,6 @@ AT_LEAST = "≥"
 NORMAL_FLOOR = Decimal("1.25")
 NORMAL_CEILING = Decimal("2.25")
 
-
 # Read a CPIC activity score, which may be exact ("1.25"), bucketed (">=3.0")
 # or absent ("n/a"). Returns the value and whether it is a lower bound.
 def parse_activity_score(text):
@@ -36,7 +35,6 @@ def parse_activity_score(text):
     except InvalidOperation:
         return None, False
 
-
 def band_activity_score(score, at_least=False):
     if score is None:
         return INDETERMINATE
@@ -57,7 +55,6 @@ def band_activity_score(score, at_least=False):
 
     return NORMAL
 
-
 # Sum the two per-allele activity values CPIC publishes for a diplotype
 def total_activity_score(first, second):
     values = []
@@ -72,7 +69,6 @@ def total_activity_score(first, second):
             return None
 
     return sum(values)
-
 
 def phenotype_from_values(first, second):
     return band_activity_score(total_activity_score(first, second))

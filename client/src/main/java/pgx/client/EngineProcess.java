@@ -91,8 +91,7 @@ public final class EngineProcess implements AutoCloseable {
 
         if (!waitUntilReady(process, baseUrl)) {
             stop(process);
-            throw new IOException(
-                    "The bundled engine did not start. See " + log + " for what it said.");
+            throw new IOException("The bundled engine did not start. See " + log + " for what it said.");
         }
         return new EngineProcess(process, baseUrl, log);
     }
@@ -109,9 +108,7 @@ public final class EngineProcess implements AutoCloseable {
     public void close() {
         try {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
-        } catch (IllegalStateException e) {
-            // Already shutting down; the hook is running or has run.
-        }
+        } catch (IllegalStateException e) { }
         stop(process);
     }
 
@@ -196,9 +193,7 @@ public final class EngineProcess implements AutoCloseable {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
-            } catch (IOException e) {
-                // Not up yet. A frozen engine takes a few seconds to unpack.
-            }
+            } catch (IOException e) { }
             try {
                 Thread.sleep(POLL.toMillis());
             } catch (InterruptedException e) {

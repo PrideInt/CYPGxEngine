@@ -63,9 +63,7 @@ public final class Theme {
                 if (!image.isError()) {
                     icons.add(image);
                 }
-            } catch (Exception e) {
-                // A missing or unreadable size is not worth failing over.
-            }
+            } catch (Exception e) { }
         }
         return icons;
     }

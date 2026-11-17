@@ -41,8 +41,6 @@ public class ReportView extends VBox {
         showEmptyState();
     }
 
-    // ------------------------------------------------------------------
-
     public void showEmptyState() {
         VBox box = card();
         box.getChildren().addAll(
@@ -90,9 +88,7 @@ public class ReportView extends VBox {
 
         getChildren().add(heading("DRUGS"));
         if (report.drugs() == null || report.drugs().isEmpty()) {
-            getChildren().add(note(
-                    "No drug reached a recommendation. Every gene it would have "
-                            + "needed was either untyped or unresolved."));
+            getChildren().add(note("No drug reached a recommendation. Every gene it would haveneeded was either untyped or unresolved."));
         } else {
             boolean abstains = false;
             for (PgxReport.DrugRecommendation drug : report.drugs()) {
@@ -113,19 +109,17 @@ public class ReportView extends VBox {
         getChildren().add(provenance(report));
     }
 
-    // ------------------------------------------------------------------
-
     private Region geneCard(PgxReport.GeneResult gene) {
         VBox box = card();
 
         if (!gene.resolved()) {
             box.getStyleClass().add("unresolved");
-            Label subtitle = styled(new Label(
-                    gene.error() == null ? "Not resolved." : gene.error()), "card-subtitle");
+
+            Label subtitle = styled(new Label(gene.error() == null ? "Not resolved." : gene.error()), "card-subtitle");
             subtitle.getStyleClass().add("unresolved");
-            box.getChildren().addAll(
-                    styled(new Label(gene.gene() + "   " + nullSafe(gene.diplotype())), "card-title"),
-                    wrap(subtitle));
+            
+            box.getChildren().addAll(styled(new Label(gene.gene() + "   " + nullSafe(gene.diplotype())), "card-title"), wrap(subtitle));
+            
             return box;
         }
 
@@ -139,8 +133,7 @@ public class ReportView extends VBox {
             field(fields, "activity score", gene.activityScore(), false);
         }
         if (gene.alleleFunctions() != null && !gene.alleleFunctions().isEmpty()) {
-            field(fields, "allele function",
-                    String.join("  ·  ", gene.alleleFunctions()), false);
+            field(fields, "allele function", String.join("  ·  ", gene.alleleFunctions()), false);
         }
         // CPIC publishes no band for most CYP2D6 diplotypes. Say so rather than
         // leaving a gap the reader has to interpret.
@@ -160,9 +153,7 @@ public class ReportView extends VBox {
         box.getChildren().add(fields);
 
         if (gene.consultationText() != null && !gene.consultationText().isBlank()) {
-            box.getChildren().addAll(
-                    rule(),
-                    wrap(styled(new Label(gene.consultationText()), "consultation")));
+            box.getChildren().addAll(rule(), wrap(styled(new Label(gene.consultationText()), "consultation")));
         }
         return box;
     }
@@ -206,19 +197,13 @@ public class ReportView extends VBox {
         VBox box = new VBox();
         box.getStyleClass().add("drug-detail");
 
-        box.getChildren().addAll(
-                styled(new Label("RECOMMENDATION"), "detail-label"),
-                wrap(styled(new Label(nullSafe(drug.recommendation())), "detail-body")));
+        box.getChildren().addAll(styled(new Label("RECOMMENDATION"), "detail-label"), wrap(styled(new Label(nullSafe(drug.recommendation())), "detail-body")));
 
         if (drug.implications() != null && !drug.implications().isBlank()) {
-            box.getChildren().addAll(
-                    styled(new Label("IMPLICATIONS"), "detail-label"),
-                    wrap(styled(new Label(drug.implications()), "detail-body")));
+            box.getChildren().addAll(styled(new Label("IMPLICATIONS"), "detail-label"), wrap(styled(new Label(drug.implications()), "detail-body")));
         }
         if (drug.comments() != null && !drug.comments().isBlank()) {
-            box.getChildren().addAll(
-                    styled(new Label("COMMENTS"), "detail-label"),
-                    wrap(styled(new Label(drug.comments()), "detail-body")));
+            box.getChildren().addAll(styled(new Label("COMMENTS"), "detail-label"), wrap(styled(new Label(drug.comments()), "detail-body")));
         }
 
         // The genes and the evidence level are on the row's meta line, which
@@ -258,6 +243,7 @@ public class ReportView extends VBox {
         PgxReport.Sources sources = report.sources();
 
         GridPane fields = fields();
+
         if (sources != null) {
             field(fields, "CPIC data", nullSafe(sources.cpicDb()), false);
             field(fields, "PharmVar", nullSafe(sources.pharmvar()), false);
@@ -268,14 +254,10 @@ public class ReportView extends VBox {
         box.getChildren().add(fields);
 
         if (report.disclaimer() != null) {
-            box.getChildren().addAll(
-                    rule(),
-                    wrap(styled(new Label(report.disclaimer()), "disclaimer")));
+            box.getChildren().addAll(rule(), wrap(styled(new Label(report.disclaimer()), "disclaimer")));
         }
         return box;
     }
-
-    // ------------------------------------------------------------------
 
     /** First sentence, or a hard cut — enough to tell the rows apart. */
     private static String summarise(String text) {
@@ -284,6 +266,7 @@ public class ReportView extends VBox {
         }
         String flat = text.replaceAll("\\s+", " ").trim();
         int stop = flat.indexOf(". ");
+
         if (stop > 40 && stop < SUMMARY_LIMIT) {
             return flat.substring(0, stop + 1);
         }

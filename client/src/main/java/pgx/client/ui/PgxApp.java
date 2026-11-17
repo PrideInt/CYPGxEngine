@@ -87,6 +87,7 @@ public class PgxApp extends Application {
     @Override
     public void stop() {
         EngineProcess started = bundled;
+        
         if (started != null) {
             started.close();
         }
@@ -143,8 +144,6 @@ public class PgxApp extends Application {
         source.setOnAction(event -> switchEngine(source.getValue()));
     }
 
-    // ------------------------------------------------------------------
-
     private Region header() {
         Label title = new Label("PGX_ENGINE");
         title.getStyleClass().add("app-title");
@@ -179,12 +178,14 @@ public class PgxApp extends Application {
         HBox bar = new HBox(14, branding, grow(), source, runButton);
         bar.getStyleClass().add("shell-header");
         bar.setAlignment(Pos.CENTER_LEFT);
+
         return bar;
     }
 
     private Region reportPane() {
         ScrollPane scroller = new ScrollPane(reportView);
         scroller.setFitToWidth(true);
+
         return scroller;
     }
 
@@ -197,6 +198,7 @@ public class PgxApp extends Application {
         HBox bar = new HBox(status, grow(), attribution);
         bar.getStyleClass().add("status-bar");
         bar.setAlignment(Pos.CENTER_LEFT);
+
         return bar;
     }
 
@@ -206,8 +208,6 @@ public class PgxApp extends Application {
         runButton.setDisable(true);
         root.setLeft(entry);
     }
-
-    // ------------------------------------------------------------------
 
     private void switchEngine(String choice) {
         if (LIVE.equals(choice)) {
@@ -287,8 +287,6 @@ public class PgxApp extends Application {
             setError("Could not open " + url);
         }
     }
-
-    // ------------------------------------------------------------------
 
     private void setStatus(String message) {
         Platform.runLater(() -> {

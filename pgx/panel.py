@@ -41,22 +41,17 @@ NAMED_PANELS = {
     }
 }
 
-
 def is_structural(allele):
     return bool(STRUCTURAL.search(allele))
-
 
 def is_structural_diplotype(diplotype):
     return any(is_structural(allele) for allele in diplotype.split("/"))
 
-
 def named_panel(gene, name):
     return list(NAMED_PANELS.get(gene, {}).get(name, []))
 
-
 def panel_names(gene):
     return list(NAMED_PANELS.get(gene, {}))
-
 
 def populations(connection, gene):
     rows = connection.execute(
@@ -65,7 +60,6 @@ def populations(connection, gene):
         (gene,)
     )
     return [row[0] for row in rows]
-
 
 def frequency_ranked_panel(connection, gene, population, size):
     """The `size` most common non-reference alleles in one population.
@@ -82,7 +76,6 @@ def frequency_ranked_panel(connection, gene, population, size):
         (gene, population, REFERENCE, size)
     )
     return [row[0] for row in rows]
-
 
 def mask(diplotype, panel):
     """What a lab assaying only `panel` would report for this diplotype.
