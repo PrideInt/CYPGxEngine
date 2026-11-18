@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from ..core.engine import generate_report, list_drugs, search_diplotypes
 
-DATABASE_PATH = os.environ.get("PGX_DB", "pgx.db")
+DATABASE_PATH = os.environ.get("CYPGX_DB", "cypgx.db")
 
 state = {}
 
@@ -18,7 +18,7 @@ async def lifespan(app):
     if not os.path.exists(DATABASE_PATH):
         raise ValueError(
             f"Knowledge base {DATABASE_PATH!r} not found. Build it first with "
-            "python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 --out data/pgx.db"
+            "python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 --out data/cypgx.db"
         )
 
     connection = sqlite3.connect(
@@ -33,7 +33,7 @@ async def lifespan(app):
 
 
 app = FastAPI(
-    title="PGx Engine",
+    title="CYPGx Engine",
     version="0.1.0",
     description="Educational pharmacogenomic guideline lookup. Not clinical software.",
     lifespan=lifespan

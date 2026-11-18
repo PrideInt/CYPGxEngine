@@ -65,7 +65,7 @@ def run_batch(connection, csv_path, drugs, output_path=None):
 parser = argparse.ArgumentParser(
     description="Pharmacogenomic guideline lookup, educational use only"
 )
-parser.add_argument("--db", default="pgx.db")
+parser.add_argument("--db", default="cypgx.db")
 parser.add_argument(
     "--gene",
     action="append",

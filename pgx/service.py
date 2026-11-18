@@ -3,7 +3,7 @@ import os
 import sys
 
 def base_dir():
-    """Where pgx.db is expected to sit.
+    """Where cypgx.db is expected to sit.
 
     Frozen by PyInstaller the engine is an executable in a folder of its own,
     and the knowledge base travels beside it. Run from a checkout it is the
@@ -18,39 +18,39 @@ def find_database(given):
         return os.path.abspath(given)
 
     root = base_dir()
-    for candidate in ("pgx.db", os.path.join("data", "pgx.db")):
+    for candidate in ("cypgx.db", os.path.join("data", "cypgx.db")):
         path = os.path.join(root, candidate)
         if os.path.exists(path):
             return path
-    return os.path.join(root, "pgx.db")
+    return os.path.join(root, "cypgx.db")
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        prog="pgx-engine",
+        prog="cypgx-engine",
         description="Serve the PGx knowledge base over HTTP on the loopback interface."
     )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
-    parser.add_argument("--db", default=None, help="path to pgx.db")
+    parser.add_argument("--db", default=None, help="path to cypgx.db")
     args = parser.parse_args(argv)
 
     database = find_database(args.db)
     if not os.path.exists(database):
         print(f"Knowledge base not found: {database}", file=sys.stderr)
         print("Build it with: python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 "
-              "--out data/pgx.db", file=sys.stderr)
+              "--out data/cypgx.db", file=sys.stderr)
         return 2
 
-    # pgx.api.main reads PGX_DB when the module is first imported, so this has
+    # pgx.api.main reads CYPGX_DB when the module is first imported, so this has
     # to be set before the import below, not after.
-    os.environ["PGX_DB"] = database
+    os.environ["CYPGX_DB"] = database
 
     import uvicorn
     from pgx.api.main import app
 
     # The client watches for this line to know the port is live; it also tells
     # anyone running the engine by hand where to point a browser.
-    print(f"pgx-engine serving {database} on http://{args.host}:{args.port}", flush=True)
+    print(f"cypgx-engine serving {database} on http://{args.host}:{args.port}", flush=True)
 
     # Loopback only. This is an educational tool holding guideline data, and
     # nothing about it should be reachable from another machine.

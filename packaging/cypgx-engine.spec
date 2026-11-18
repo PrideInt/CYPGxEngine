@@ -1,9 +1,9 @@
 # PyInstaller spec for the PGx engine.
 #
-#   pyinstaller packaging/pgx-engine.spec --noconfirm
+#   pyinstaller packaging/cypgx-engine.spec --noconfirm
 #
-# Run from the project root. Produces dist/pgx-engine/, a folder containing
-# pgx-engine.exe and its _internal/ directory.
+# Run from the project root. Produces dist/cypgx-engine/, a folder containing
+# cypgx-engine.exe and its _internal/ directory.
 #
 # One-dir rather than one-file deliberately: a one-file build unpacks itself
 # into a temporary directory on every launch, which costs seconds of startup
@@ -78,7 +78,7 @@ exe = EXE(
     analysis.scripts,
     [],
     exclude_binaries=True,
-    name="pgx-engine",
+    name="cypgx-engine",
     debug=False,
     strip=False,
     upx=False,
@@ -91,5 +91,5 @@ coll = COLLECT(
     analysis.datas,
     strip=False,
     upx=False,
-    name="pgx-engine",
+    name="cypgx-engine",
 )

@@ -53,7 +53,7 @@ public final class EngineProcess implements AutoCloseable {
 
     /** The bundled engine executable, or null when this is not a distribution. */
     public static Path locate() {
-        String name = isWindows() ? "pgx-engine.exe" : "pgx-engine";
+        String name = isWindows() ? "cypgx-engine.exe" : "cypgx-engine";
 
         for (Path root : searchRoots()) {
             Path candidate = root.resolve(FOLDER).resolve(name);
@@ -72,7 +72,7 @@ public final class EngineProcess implements AutoCloseable {
      */
     public static EngineProcess start(Path executable) throws IOException {
         int port = freePort();
-        Path log = Paths.get(System.getProperty("java.io.tmpdir"), "pgx-engine.log");
+        Path log = Paths.get(System.getProperty("java.io.tmpdir"), "cypgx-engine.log");
 
         List<String> command = new ArrayList<>();
         command.add(executable.toString());

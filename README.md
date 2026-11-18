@@ -40,7 +40,7 @@ is reported as a result rather than hidden as a blank.
 
 ## Where to download
 
-A packaged build needs nothing installed — no Java, no Python, and is located under [releases](https://github.com/PrideInt/PGxEngine/releases).
+A packaged build needs nothing installed — no Java, no Python, and is located under [releases](https://github.com/PrideInt/CYPGxEngine/releases).
 
 It starts its own engine on the loopback interface, picks a free port, and
 stops the engine when the window closes. To build it, see
@@ -75,7 +75,7 @@ python -m pgx.query.cpic \
     --genes CYP2C19 CYP2D6 CYP2B6 \
     --cpic-version v1.61.0 \
     --pharmvar-version "via CPIC v1.61.0 (API import)" \
-    --out data/pgx.db
+    --out data/cypgx.db
 ```
 
 Pin the versions. They are stamped into the database's `meta` table and
@@ -89,18 +89,18 @@ reproducible months later.
 Example:
 
 ```bash
-python -m pgx.cli --db data/pgx.db --gene CYP2C19=*2/*5 --gene CYP2D6=*4/*4 --pretty
+python -m pgx.cli --db data/cypgx.db --gene CYP2C19=*2/*5 --gene CYP2D6=*4/*4 --pretty
 ```
 
 ```bash
-python -m pgx.cli --db data/pgx.db --batch cohort.csv --out reports.jsonl
+python -m pgx.cli --db data/cypgx.db --batch cohort.csv --out reports.jsonl
 ```
 
 **HTTP service** — FastAPI on loopback:
 
 ```bash
-PGX_DB=data/pgx.db python -m pgx.service --port 8000
-# PowerShell: $env:PGX_DB = "data/pgx.db"
+CYPGX_DB=data/cypgx.db python -m pgx.service --port 8000
+# PowerShell: $env:CYPGX_DB = "data/cypgx.db"
 ```
 
 | Endpoint | |
@@ -136,8 +136,8 @@ powershell -ExecutionPolicy Bypass -File packaging\build.ps1  # Windows only
 
 | Output | Needs installed | Runs on |
 | --- | --- | --- |
-| `dist/PGxEngine-portable/` | Java 17+ | Windows, Linux, Apple Silicon |
-| `dist/PGx Engine/` | nothing | the platform it was built on |
+| `dist/CYPGxEngine-portable/` | Java 17+ | Windows, Linux, Apple Silicon |
+| `dist/CYPGxEngine/` | nothing | the platform it was built on |
 
 Both carry their own frozen engine and a copy of the knowledge base, and both
 start the engine themselves. Neither cross-builds: run the script on the
@@ -167,7 +167,7 @@ packaging/         build scripts and PyInstaller spec
 
 TBA.
 
-No network and no `data/pgx.db` required, the suite builds its own fixture.
+No network and no `data/cypgx.db` required, the suite builds its own fixture.
 
 ## Validation
 

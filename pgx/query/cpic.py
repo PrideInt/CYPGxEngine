@@ -425,7 +425,7 @@ def build(database_path, genes, cpic_version="UNPINNED", pharmvar_version="UNPIN
 
 # The CLI stuff
 parser = argparse.ArgumentParser(description="Build the local CPIC knowledge base")
-parser.add_argument("--out", default="pgx.db")
+parser.add_argument("--out", default="cypgx.db")
 parser.add_argument(
     "--genes",
     nargs="+",

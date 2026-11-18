@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Builds both distributions of the PGxEngine.
+# Builds both distributions of the CYPGxEngine.
 #
 #     bash packaging/build.sh
 #
@@ -9,12 +9,12 @@
 #
 # Produces, under dist/ :
 #
-#   PGxEngine-portable/   a runnable jar plus the engine. Needs Java 17+ on
+#   CYPGxEngine-portable/   a runnable jar plus the engine. Needs Java 17+ on
 #                         the target machine; runs on Windows, Linux and
 #                         Apple Silicon.
 #
-#   PGxEngine/           a native application folder for THIS platform.
-#   PGxEngine.app/       Needs nothing installed.
+#   CYPGxEngine/           a native application folder for THIS platform.
+#   CYPGxEngine.app/       Needs nothing installed.
 #
 # Both carry their own engine and knowledge base, and both start the engine
 # themselves. Neither needs Python.
@@ -32,10 +32,10 @@
 
 set -euo pipefail
 
-APP_NAME="PGxEngine"
+APP_NAME="CYPGxEngine"
 APP_VERSION="0.1.0"
 MAIN_CLASS="pgx.client.Launcher"
-MAIN_JAR="pgx-client.jar"
+MAIN_JAR="cypgx-client.jar"
 
 # // OUTPUT
 
@@ -116,8 +116,8 @@ info "python:   $PY ($($PY -c 'import sys; print(sys.version.split()[0])'))"
 info "pyinstaller: $($PY -c 'import PyInstaller; print(PyInstaller.__version__)')"
 info "java:     $(java -version 2>&1 | head -1 | tr -d '\r')"
 
-[[ -f data/pgx.db ]] || die "data/pgx.db is missing. Build it first:
-    python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 --out data/pgx.db"
+[[ -f data/cypgx.db ]] || die "data/cypgx.db is missing. Build it first:
+    python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 --out data/cypgx.db"
 
 [[ -f "$ICON" ]] || { note "no icon at $ICON — building without one"; ICON=""; }
 
@@ -127,23 +127,23 @@ mkdir -p build
 # // ENGINE
 
 step "Freezing the engine"
-$PY -m PyInstaller packaging/pgx-engine.spec --noconfirm \
+$PY -m PyInstaller packaging/cypgx-engine.spec --noconfirm \
     --distpath build/engine --workpath build/pyinstaller --log-level WARN \
     || die "PyInstaller failed."
 
-ENGINE="build/engine/pgx-engine"
-[[ -x "$ENGINE/pgx-engine$EXE" ]] || die "pgx-engine$EXE was not produced in $ENGINE."
+ENGINE="build/engine/cypgx-engine"
+[[ -x "$ENGINE/cypgx-engine$EXE" ]] || die "cypgx-engine$EXE was not produced in $ENGINE."
 
 # The knowledge base rides beside the executable rather than inside it, so a
 # rebuild against a newer CPIC release does not mean refreezing the engine.
-cp data/pgx.db "$ENGINE/pgx.db"
+cp data/cypgx.db "$ENGINE/cypgx.db"
 info "engine: $(du -sh "$ENGINE" | cut -f1)"
 
 # // JARS
 
 step "Building the cross-platform jar"
 mvn -q -f client/pom.xml -Pdist,cross clean package || die "Maven failed (cross-platform jar)."
-cp "client/target/$MAIN_JAR" build/pgx-client-all.jar
+cp "client/target/$MAIN_JAR" build/cypgx-client-all.jar
 
 step "Building the $PLATFORM-only jar"
 mvn -q -f client/pom.xml -Pdist clean package || die "Maven failed ($PLATFORM jar)."
@@ -157,21 +157,21 @@ cp -R "$ENGINE" build/jpackage-input/engine
 
 # // PORTABLE
 
-step "Assembling dist/PGxEngine-portable"
-PORTABLE="dist/PGxEngine-portable"
+step "Assembling dist/CYPGxEngine-portable"
+PORTABLE="dist/CYPGxEngine-portable"
 mkdir -p "$PORTABLE"
-cp build/pgx-client-all.jar "$PORTABLE/$MAIN_JAR"
+cp build/cypgx-client-all.jar "$PORTABLE/$MAIN_JAR"
 cp -R "$ENGINE" "$PORTABLE/engine"
 
 cat > "$PORTABLE/README.txt" <<'EOF'
-PGxEngine — portable
+CYPGxEngine — portable
 =====================
 
 Needs Java 17 or newer. Check with:  java -version
 
 Then, from this folder:
 
-    java -jar pgx-client.jar
+    java -jar cypgx-client.jar
 
 The application starts the engine in engine/ by itself, on a port it picks
 at the time. Nothing listens outside this machine and nothing is sent
@@ -188,7 +188,7 @@ The engine folder here was frozen on one platform and only runs on that
 one. On a different operating system, rebuild there.
 
 If it does not start, the engine's own output is in your temp directory as
-pgx-engine.log.
+cypgx-engine.log.
 EOF
 
 # // NATIVE APPLICATION
@@ -213,7 +213,7 @@ if [[ "$PLATFORM" == mac ]]; then APP_DIR="dist/$APP_NAME.app"; else APP_DIR="di
 [[ -d "$APP_DIR" ]] || die "jpackage reported success but $APP_DIR is not there."
 
 cat > "$APP_DIR/README.txt" <<EOF
-PGxEngine
+CYPGxEngine
 ==========
 
 Nothing needs installing — Java and Python are both inside this folder.
@@ -229,7 +229,7 @@ there instead.
 
 If the window opens but says no engine was found, the engine folder is
 missing from beside the jar. The engine's own output goes to
-pgx-engine.log in your temp directory.
+cypgx-engine.log in your temp directory.
 EOF
 
 # // DONE

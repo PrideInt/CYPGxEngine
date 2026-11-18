@@ -1,1 +1,1 @@
-"""PGx Engine — educational pharmacogenomic guideline lookup."""
+"""CYPGx Engine — educational pharmacogenomic guideline lookup."""
