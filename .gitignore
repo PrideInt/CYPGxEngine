@@ -14,6 +14,11 @@
 # PACKAGING
 !/packaging/**
 
+# ANALYSIS
+!/tests/**/*.py
+!/tools/*.py
+!/docs/**/*.md
+
 # REPO
 !/.gitignore
 !/README.md
@@ -25,7 +30,10 @@ __pycache__/
 /client/target/
 /build/
 /dist/
-/results/
+/results/*
+!/results/panel_accuracy.csv
+!/results/panel_confusion.csv
+!/results/posterior_scores.csv
 /packaging/README.md
 *.db
 *.db-journal
