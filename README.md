@@ -286,8 +286,8 @@ the mask becomes injective.
 ## AI Disclosure
 
 This project was built with assistance from Claude (Anthropic),
-used as a pair programmer with Copilot and live agent coding,
+used as a coding agent with GitHub Copilot,
 and a writing assistant (assisting in populating this README.md 
-from drafted MS) across sessions between October and November 2026. 
+from a drafted MS) across sessions between October and November 2026. 
 
 Responsibility for the correctness of what is here is mine.
