@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /**
- * PGx Engine — a reader for one patient's report.
+ * CYPGx Engine — a reader for one patient's report.
  *
  * Educational use only. Not clinical decision support.
  *
@@ -36,7 +36,7 @@ import java.util.Map;
  * the application is running. That switch is in the header, which makes the
  * stub a demonstrable fallback rather than a development convenience.
  *
- * Nothing here sets a colour or a font. Those live in pgx.css.
+ * Nothing here sets a colour or a font. Those live in cypgx.css.
  */
 public class PgxApp extends Application {
 
@@ -74,7 +74,7 @@ public class PgxApp extends Application {
         Scene scene = new Scene(root, 1240, 820);
         Theme.apply(scene);
 
-        stage.setTitle("PGx Engine — educational use only");
+        stage.setTitle("CYPGx Engine — educational use only");
         stage.getIcons().addAll(Theme.appIcons());
         stage.setScene(scene);
         stage.show();
@@ -145,7 +145,7 @@ public class PgxApp extends Application {
     }
 
     private Region header() {
-        Label title = new Label("PGX_ENGINE");
+        Label title = new Label("CYPGX_ENGINE");
         title.getStyleClass().add("app-title");
 
         Label subtitle = new Label("CPIC guideline lookup · educational use only");

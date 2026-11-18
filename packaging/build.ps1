@@ -1,5 +1,5 @@
 <#
-    Builds both distributions of the PGxEngine.
+    Builds both distributions of the CYPGxEngine.
 
         powershell -ExecutionPolicy Bypass -File packaging\build.ps1
 
@@ -10,12 +10,12 @@
 
     Produces, under dist\ :
 
-      PGxEngine-portable\   a runnable jar plus the engine. Needs Java 17+ on
+      CYPGxEngine-portable\   a runnable jar plus the engine. Needs Java 17+ on
                             the target machine; runs on Windows, Linux and
                             Apple Silicon.
 
-      PGxEngine\           a Windows application folder. Needs nothing
-                            installed: double-click "PGxEngine.exe".
+      CYPGxEngine\           a Windows application folder. Needs nothing
+                            installed: double-click "CYPGxEngine.exe".
 
     The interpreter used to freeze the engine is chosen automatically: the
     first one found that can import PyInstaller. Override it if you need a
@@ -30,10 +30,10 @@
 
 $ErrorActionPreference = "Stop"
 
-$AppName    = "PGxEngine"
+$AppName    = "CYPGxEngine"
 $AppVersion = "0.1.0"
 $MainClass  = "pgx.client.Launcher"
-$MainJar    = "pgx-client.jar"
+$MainJar    = "cypgx-client.jar"
 
 function Step($text) { Write-Host "`n== $text" -ForegroundColor Cyan }
 function Info($text) { Write-Host "   $text" }
@@ -96,8 +96,8 @@ $piVersion = & $python.Exe @($python.Args) -c "import PyInstaller; print(PyInsta
 Info "python:      $($python.Exe) $($python.Args) ($pyVersion)"
 Info "pyinstaller: $piVersion"
 
-if (-not (Test-Path "data\pgx.db")) {
-    throw "data\pgx.db is missing. Build it first: python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 --out data\pgx.db"
+if (-not (Test-Path "data\cypgx.db")) {
+    throw "data\cypgx.db is missing. Build it first: python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 --out data\cypgx.db"
 }
 
 Remove-Item -Recurse -Force build, dist -ErrorAction SilentlyContinue
@@ -106,16 +106,16 @@ New-Item -ItemType Directory -Force -Path build | Out-Null
 # // ENGINE
 
 Step "Freezing the engine"
-& $python.Exe @($python.Args) -m PyInstaller packaging\pgx-engine.spec --noconfirm `
+& $python.Exe @($python.Args) -m PyInstaller packaging\cypgx-engine.spec --noconfirm `
     --distpath build\engine --workpath build\pyinstaller --log-level WARN
 if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed." }
 
-$engine = "build\engine\pgx-engine"
-if (-not (Test-Path "$engine\pgx-engine.exe")) { throw "pgx-engine.exe was not produced in $engine." }
+$engine = "build\engine\cypgx-engine"
+if (-not (Test-Path "$engine\cypgx-engine.exe")) { throw "cypgx-engine.exe was not produced in $engine." }
 
 # The knowledge base rides beside the executable rather than inside it, so a
 # rebuild against a newer CPIC release does not mean refreezing the engine.
-Copy-Item "data\pgx.db" "$engine\pgx.db"
+Copy-Item "data\cypgx.db" "$engine\cypgx.db"
 Info ("engine: {0} MB" -f [math]::Round((Get-ChildItem $engine -Recurse | Measure-Object Length -Sum).Sum / 1MB, 1))
 
 # // JARS
@@ -123,7 +123,7 @@ Info ("engine: {0} MB" -f [math]::Round((Get-ChildItem $engine -Recurse | Measur
 Step "Building the cross-platform jar"
 mvn -q -f client\pom.xml -Pdist,cross clean package
 if ($LASTEXITCODE -ne 0) { throw "Maven failed (cross-platform jar)." }
-Copy-Item "client\target\$MainJar" "build\pgx-client-all.jar"
+Copy-Item "client\target\$MainJar" "build\cypgx-client-all.jar"
 
 Step "Building the Windows-only jar"
 mvn -q -f client\pom.xml -Pdist clean package
@@ -138,21 +138,21 @@ Copy-Item $engine "build\jpackage-input\engine" -Recurse
 
 # // PORTABLE
 
-Step "Assembling dist\PGxEngine-portable"
-$portable = "dist\PGxEngine-portable"
+Step "Assembling dist\CYPGxEngine-portable"
+$portable = "dist\CYPGxEngine-portable"
 New-Item -ItemType Directory -Force -Path $portable | Out-Null
-Copy-Item "build\pgx-client-all.jar" "$portable\$MainJar"
+Copy-Item "build\cypgx-client-all.jar" "$portable\$MainJar"
 Copy-Item $engine "$portable\engine" -Recurse
 
 @'
-PGxEngine - portable
+CYPGxEngine - portable
 =====================
 
 Needs Java 17 or newer. Check with:  java -version
 
 Then, from this folder:
 
-    java -jar pgx-client.jar
+    java -jar cypgx-client.jar
 
 The application starts the engine in engine\ by itself, on a port it picks
 at the time. Nothing listens outside this machine and nothing is sent
@@ -169,7 +169,7 @@ The engine folder here was frozen on Windows and only runs on Windows. On
 another operating system, rebuild there with packaging/build.sh.
 
 If it does not start, the engine's own output is in your temp directory as
-pgx-engine.log.
+cypgx-engine.log.
 '@ | Set-Content "$portable\README.txt" -Encoding UTF8
 
 # // WINDOWS APPLICATION
@@ -195,10 +195,10 @@ $appDir = "dist\$AppName"
 if (-not (Test-Path $appDir)) { throw "jpackage reported success but $appDir is not there." }
 
 @'
-PGxEngine
+CYPGxEngine
 ==========
 
-Double-click "PGxEngine.exe". Nothing needs installing - Java and Python
+Double-click "CYPGxEngine.exe". Nothing needs installing - Java and Python
 are both inside this folder.
 
 The application starts its own engine, on the loopback interface only, and
@@ -212,7 +212,7 @@ there with packaging/build.sh instead.
 
 If the window opens but says no engine was found, the engine folder is
 missing from beside the jar. The engine's own output goes to
-pgx-engine.log in your temp directory.
+cypgx-engine.log in your temp directory.
 '@ | Set-Content "$appDir\README.txt" -Encoding UTF8
 
 # // DONE

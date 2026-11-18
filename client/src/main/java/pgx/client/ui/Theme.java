@@ -22,7 +22,7 @@ import java.util.List;
  */
 public final class Theme {
 
-    private static final String STYLESHEET = "/pgx.css";
+    private static final String STYLESHEET = "/cypgx.css";
 
     private static final String[] FONTS = {
             "/fonts/CascadiaMono-Regular.ttf",
@@ -103,7 +103,7 @@ public final class Theme {
 
         URL sheet = Theme.class.getResource(STYLESHEET);
         if (sheet == null) {
-            System.err.println("pgx.css is not on the classpath; using JavaFX defaults.");
+            System.err.println("cypgx.css is not on the classpath; using JavaFX defaults.");
             return;
         }
         scene.getStylesheets().add(sheet.toExternalForm());

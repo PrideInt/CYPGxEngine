@@ -27,7 +27,7 @@ def open_database(path):
     if stored != KB_SCHEMA:
         raise ValueError(
             f"The knowledge base at {path!r} was built for schema {stored or 'pre-1.1'}, but this engine expects {KB_SCHEMA}. "
-            "Rebuild it with: python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 --out data/pgx.db"
+            "Rebuild it with: python -m pgx.query.cpic --genes CYP2C19 CYP2D6 CYP2B6 --out data/cypgx.db"
         )
 
     return connection
