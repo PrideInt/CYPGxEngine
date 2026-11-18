@@ -72,6 +72,17 @@ CREATE TABLE IF NOT EXISTS allele_frequency (
     PRIMARY KEY (gene, allele, population)
 );
 
+-- CPIC's own published phenotype prevalence, per biogeographic group. Not
+-- used by the engine: it exists so the Hardy-Weinberg marginal derived from
+-- allele frequencies can be checked against the publisher's own figure.
+CREATE TABLE IF NOT EXISTS phenotype_frequency (
+    gene       TEXT NOT NULL,
+    phenotype  TEXT NOT NULL,
+    population TEXT NOT NULL,
+    frequency  REAL,
+    PRIMARY KEY (gene, phenotype, population)
+);
+
 CREATE INDEX IF NOT EXISTS idx_freq_gene ON allele_frequency(gene, population);
 CREATE INDEX IF NOT EXISTS idx_rec_drug ON recommendation(drug_name);
 CREATE INDEX IF NOT EXISTS idx_pair_drug ON pair(drug_id);
@@ -150,24 +161,70 @@ def as_json(value):
 
     return json.dumps(value, sort_keys=True, ensure_ascii=False)
 
+# Every endpoint the API exposes, from its own schema
+def list_endpoints():
+    """PostgREST publishes an OpenAPI document at the root.
+
+    Reading it settles what exists, which is better than inferring absence
+    from a 404 on a name somebody guessed.
+    """
+    response = requests.get(f"{API_URL}/", timeout=30)
+    response.raise_for_status()
+    document = response.json()
+
+    names = sorted(document.get("definitions") or {})
+
+    if not names:
+        names = sorted(
+            path.lstrip("/")
+            for path in (document.get("paths") or {})
+            if path.strip("/")
+        )
+
+    print(f"{len(names)} endpoints at {API_URL}")
+    for name in names:
+        print(f"  {name}")
+
+    return names
+
 # Print live column names before trusting the column mapping
 def inspect_endpoint(endpoint):
-    response = requests.get(
-        f"{API_URL}/{endpoint}",
-        params={"limit": "1"},
-        timeout=30
-    )
-    response.raise_for_status()
+    """One endpoint's columns.
+
+    Reports and returns rather than raising. An endpoint that does not exist
+    is itself an answer, and finding one should not stop the rest of the list
+    being inspected.
+    """
+    try:
+        response = requests.get(
+            f"{API_URL}/{endpoint}",
+            params={"limit": "1"},
+            timeout=30
+        )
+    except requests.RequestException as error:
+        print(f"--- {endpoint} --- unreachable: {error}")
+        return False
+
+    if response.status_code == 404:
+        print(f"--- {endpoint} --- no such endpoint (404)")
+        return False
+
+    if not response.ok:
+        print(f"--- {endpoint} --- HTTP {response.status_code}")
+        return False
+
     rows = response.json()
 
     if not rows:
-        print(f"{endpoint}: no rows returned")
-        return
+        print(f"--- {endpoint} --- exists, no rows returned")
+        return True
 
     print(f"--- {endpoint} ---")
     for column, value in rows[0].items():
         preview = json.dumps(value)[:70]
         print(f"  {column:<24} {preview}")
+
+    return True
 
 def extract_activity_score(gene, lookup_key):
     if not isinstance(lookup_key, dict):
@@ -240,6 +297,54 @@ def store_alleles(connection, genes):
     return allele_count, frequency_count
 
 
+def store_phenotype_frequencies(connection, genes):
+    """CPIC's published phenotype prevalence, from the gene_result endpoint.
+
+    One row per phenotype per gene, each carrying a frequency object keyed by
+    biogeographic group. Nulls are not stored, so an absent row reads as
+    absent — the same convention as allele_frequency.
+
+    Nothing in the engine reads this. It is the outside number the derived
+    marginal gets compared against, and keeping it in the knowledge base means
+    that comparison is reproducible from a build rather than from a session.
+    """
+    # CYP2D6 looks up by activity score, so gene_result holds one row per
+    # score and several of them carry the same phenotype. Their frequencies
+    # are slices of that phenotype and must be summed. Writing each row
+    # straight to the table lets the last one win, which silently reports a
+    # single activity score's share as the whole phenotype's prevalence.
+    totals = {}
+
+    for gene in genes:
+        rows = fetch_all("gene_result", order="id.asc", genesymbol=f"eq.{gene}")
+
+        if not rows:
+            print(f"  {gene}: no gene_result rows", file=sys.stderr)
+            continue
+
+        for row in rows:
+            frequencies = row.get("frequency")
+            phenotype = normalize_text(row.get("result"))
+
+            if not isinstance(frequencies, dict) or not phenotype:
+                continue
+
+            for population, value in frequencies.items():
+                if value is None:
+                    continue
+
+                key = (gene, phenotype, population)
+                totals[key] = totals.get(key, 0.0) + float(value)
+
+    for (gene, phenotype, population), frequency in totals.items():
+        connection.execute(
+            "INSERT OR REPLACE INTO phenotype_frequency VALUES (?,?,?,?)",
+            (gene, phenotype, population, frequency)
+        )
+
+    return len(totals)
+
+
 def report_frequency_coverage(connection, genes):
     """Within a population the allele frequencies should sum to about 1.
 
@@ -282,7 +387,8 @@ def build(database_path, genes, cpic_version="UNPINNED", pharmvar_version="UNPIN
     # IF NOT EXISTS can never silently keep an older table's columns, and no row
     # from a previous build can survive into this one.
     for table in (
-        "diplotype", "recommendation", "pair", "allele", "allele_frequency", "meta"
+        "diplotype", "recommendation", "pair", "allele", "allele_frequency",
+        "phenotype_frequency", "meta"
     ):
         connection.execute(f"DROP TABLE IF EXISTS {table}")
 
@@ -371,6 +477,9 @@ def build(database_path, genes, cpic_version="UNPINNED", pharmvar_version="UNPIN
     # Allele function and frequency, for the panel and prior work
     allele_count, frequency_count = store_alleles(connection, genes)
 
+    # CPIC's own phenotype prevalence, to check the derived marginal against
+    phenotype_frequency_count = store_phenotype_frequencies(connection, genes)
+
     # Record provenance
     retrieved_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -410,7 +519,8 @@ def build(database_path, genes, cpic_version="UNPINNED", pharmvar_version="UNPIN
     print(
         f"Wrote {database_path}: {diplotype_count} diplotypes, "
         f"{recommendation_count} recommendations, "
-        f"{allele_count} alleles, {frequency_count} frequencies",
+        f"{allele_count} alleles, {frequency_count} frequencies, "
+        f"{phenotype_frequency_count} phenotype frequencies",
         file=sys.stderr
     )
     if missing_text or missing_lookup or missing_drug:
@@ -439,11 +549,18 @@ parser.add_argument(
     metavar="ENDPOINT",
     help="Print live column names instead of building the database"
 )
+parser.add_argument(
+    "--endpoints",
+    action="store_true",
+    help="List every endpoint the API exposes, then exit"
+)
 
 if __name__ == "__main__":
     arguments = parser.parse_args()
 
-    if arguments.inspect is not None:
+    if arguments.endpoints:
+        list_endpoints()
+    elif arguments.inspect is not None:
         endpoints = arguments.inspect or [
             "diplotype",
             "recommendation",
