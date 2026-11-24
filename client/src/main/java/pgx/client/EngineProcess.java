@@ -15,20 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Starts and stops the bundled Python engine.
+ * Starts and stops the bundled Python engine
  *
  * In a distribution the engine is a folder beside the application, holding an
  * executable and the knowledge base it reads. The client starts it on a port
  * nobody else is using, waits for it to answer, and kills it on the way out —
- * so whoever runs the application needs neither Python nor a terminal.
+ * so whoever runs the application needs neither Python nor a terminal
  *
  * Absent entirely during development, where the engine is normally already
  * running under uvicorn. {@link #locate()} returns null and the caller falls
- * back to whatever is listening on the default port.
+ * back to whatever is listening on the default port
  */
 public final class EngineProcess implements AutoCloseable {
 
-    /** Overrides the search, for a layout this class does not anticipate. */
     private static final String HOME_PROPERTY = "pgx.engine.home";
 
     private static final String FOLDER = "engine";
@@ -45,13 +44,11 @@ public final class EngineProcess implements AutoCloseable {
         this.baseUrl = baseUrl;
         this.log = log;
 
-        // A JVM that dies without reaching close() must not leave the engine
-        // running and the port held.
         this.shutdownHook = new Thread(() -> stop(process));
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
-    /** The bundled engine executable, or null when this is not a distribution. */
+    /** The bundled engine executable, or null when this is not a distribution */
     public static Path locate() {
         String name = isWindows() ? "cypgx-engine.exe" : "cypgx-engine";
 
@@ -65,7 +62,7 @@ public final class EngineProcess implements AutoCloseable {
     }
 
     /**
-     * Starts the engine and returns once it answers, or throws.
+     * Starts the engine and returns once it answers, or throws an IOException
      *
      * @throws IOException if it cannot be started, dies during startup, or
      *                     does not answer within the timeout
@@ -112,13 +109,11 @@ public final class EngineProcess implements AutoCloseable {
         stop(process);
     }
 
-    // ------------------------------------------------------------------
-
     /**
-     * Where a distribution might have put the engine folder.
+     * Where a distribution might have put the engine folder
      *
      * A runnable jar sits beside it. A jpackage app-image puts the jar in
-     * app/, one level below the launcher, so the grandparent is checked too.
+     * app/, one level below the launcher, so the grandparent is checked too
      */
     private static List<Path> searchRoots() {
         List<Path> roots = new ArrayList<>();
@@ -154,12 +149,12 @@ public final class EngineProcess implements AutoCloseable {
     }
 
     /**
-     * A port the OS says is free.
+     * A free OS port...
      *
      * Opening and closing a socket to learn a number leaves a gap in which
      * something else could take it. The gap is microseconds and the engine is
-     * the only thing being started, so the alternative — a fixed port that
-     * collides with whatever else the user is running — is the worse bet.
+     * the only thing being started, so the alternative, a fixed port that
+     * collides with whatever else the user is running, is the worse bet
      */
     private static int freePort() throws IOException {
         try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {

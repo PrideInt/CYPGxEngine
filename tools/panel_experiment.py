@@ -29,7 +29,7 @@ from pgx.panel import (
     populations
 )
 
-# // SEVERITY
+# SEVERITY
 
 # Ordered by metabolic capacity, least to most. Used only to say which
 # DIRECTION an error went. Calling a poor metabolizer normal gives a patient a
@@ -120,7 +120,7 @@ def evaluate(connection, gene, samples, panel):
 def accuracy(counts):
     return counts["correct"] / counts["n"] if counts["n"] else 0.0
 
-# Output
+# OUTPUT
 
 def ensure_directory(path):
     directory = os.path.dirname(os.path.abspath(path))

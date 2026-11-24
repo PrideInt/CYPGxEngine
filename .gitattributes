@@ -1,0 +1,22 @@
+# Normalise line endings in the repository to LF
+#
+# Every text file is stored LF and checked out LF, with two exceptions below.
+# Without this, editing on Windows flips files to CRLF and `git status` fills
+# with whole-file diffs whose content is identical
+
+* text=auto eol=lf
+
+# build.sh must be LF whatever the platform: a CRLF shebang line makes bash
+# fail with "syntax error near unexpected token" rather than anything useful
+*.sh  text eol=lf
+
+# PowerShell is the Windows-side counterpart and is conventionally CRLF
+*.ps1 text eol=crlf
+
+# Binaries git must not touch
+*.png binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.jar binary
+*.pdf binary

@@ -32,13 +32,11 @@ from pgx.panel import populations
 
 GENES = ("CYP2C19", "CYP2D6", "CYP2B6")
 
-
 def ensure_directory(path):
     directory = os.path.dirname(os.path.abspath(path))
 
     if directory:
         os.makedirs(directory, exist_ok=True)
-
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -97,7 +95,6 @@ def main():
     print(f"\nWrote {arguments.out}: {len(rows)} rows", file=sys.stderr)
     print("A derivation from CPIC's allele frequencies, not yet checked "
           "against CPIC's own phenotype frequencies.", file=sys.stderr)
-
 
 if __name__ == "__main__":
     main()

@@ -90,7 +90,6 @@ class TestGeneModel(FrequencyTestCase):
         # Excluded from the allele pool, but still a row the engine can look up.
         self.assertEqual(self.model["phenotypes"]["*1/*2x2"], POOR)
 
-
 class TestAllelePrior(FrequencyTestCase):
     def test_frequencies_are_a_distribution(self):
         self.assertAlmostEqual(sum(self.prior["frequencies"].values()), 1.0, places=9)
@@ -130,7 +129,6 @@ class TestMarginal(FrequencyTestCase):
     def test_sums_to_one(self):
         self.assertAlmostEqual(
             sum(marginal(self.model, self.prior).values()), 1.0, places=9)
-
 
 class TestPosterior(FrequencyTestCase):
     def test_empty_panel_equals_the_marginal(self):
@@ -180,7 +178,6 @@ class TestPosterior(FrequencyTestCase):
         # An empty distribution, not a confident wrong one.
         self.assertEqual(posterior(self.model, self.prior, "*4/*4", ["*4"]), {})
 
-
 class TestCandidates(FrequencyTestCase):
     def test_carried_allele_names_itself(self):
         self.assertEqual(
@@ -195,7 +192,6 @@ class TestCandidates(FrequencyTestCase):
 
     def test_uncarried_non_reference_is_unreachable(self):
         self.assertEqual(candidates_for("*3", ["*1", "*2", "*3"], ["*2"]), [])
-
 
 class TestMask(unittest.TestCase):
     def test_uncarried_alleles_become_reference(self):
@@ -214,7 +210,6 @@ class TestMask(unittest.TestCase):
         self.assertTrue(is_structural("*2x2"))
         self.assertTrue(is_structural("*36+*10"))
         self.assertFalse(is_structural("*2"))
-
 
 class TestScoring(unittest.TestCase):
     def test_brier_rewards_a_correct_point_call(self):

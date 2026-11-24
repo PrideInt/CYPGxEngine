@@ -37,7 +37,7 @@ APP_VERSION="0.1.0"
 MAIN_CLASS="pgx.client.Launcher"
 MAIN_JAR="cypgx-client.jar"
 
-# // OUTPUT
+# OUTPUT
 
 bold=$'\033[1m'; cyan=$'\033[36m'; red=$'\033[31m'; dim=$'\033[2m'; off=$'\033[0m'
 step() { printf '\n%s== %s%s\n' "$cyan$bold" "$*" "$off"; }
@@ -45,7 +45,7 @@ info() { printf '   %s\n' "$*"; }
 note() { printf '   %s%s%s\n' "$dim" "$*" "$off"; }
 die()  { printf '\n%sBuild failed:%s %s\n\n' "$red$bold" "$off" "$*" >&2; exit 1; }
 
-# // PLATFORM
+# PLATFORM
 
 case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*) PLATFORM=windows; EXE=".exe" ;;
@@ -66,7 +66,7 @@ case "$PLATFORM" in
     linux)   ICON="client/src/main/resources/brand/icon-256.png" ;;
 esac
 
-# // PRECONDITIONS
+# PRECONDITIONS
 
 step "Checking the toolchain"
 info "platform: $PLATFORM"
@@ -124,7 +124,7 @@ info "java:     $(java -version 2>&1 | head -1 | tr -d '\r')"
 rm -rf build dist
 mkdir -p build
 
-# // ENGINE
+# ENGINE
 
 step "Freezing the engine"
 $PY -m PyInstaller packaging/cypgx-engine.spec --noconfirm \
@@ -139,7 +139,7 @@ ENGINE="build/engine/cypgx-engine"
 cp data/cypgx.db "$ENGINE/cypgx.db"
 info "engine: $(du -sh "$ENGINE" | cut -f1)"
 
-# // JARS
+# JARS
 
 step "Building the cross-platform jar"
 mvn -q -f client/pom.xml -Pdist,cross clean package || die "Maven failed (cross-platform jar)."
@@ -155,7 +155,7 @@ mkdir -p build/jpackage-input
 cp "client/target/$MAIN_JAR" "build/jpackage-input/$MAIN_JAR"
 cp -R "$ENGINE" build/jpackage-input/engine
 
-# // PORTABLE
+# PORTABLE
 
 step "Assembling dist/CYPGxEngine-portable"
 PORTABLE="dist/CYPGxEngine-portable"
@@ -191,7 +191,7 @@ If it does not start, the engine's own output is in your temp directory as
 cypgx-engine.log.
 EOF
 
-# // NATIVE APPLICATION
+# NATIVE APPLICATION
 
 step "Building the native application"
 JPACKAGE_ARGS=(
@@ -232,7 +232,7 @@ missing from beside the jar. The engine's own output goes to
 cypgx-engine.log in your temp directory.
 EOF
 
-# // DONE
+# DONE
 
 step "Done"
 for path in "$PORTABLE" "$APP_DIR"; do
