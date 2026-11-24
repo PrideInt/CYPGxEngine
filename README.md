@@ -34,7 +34,7 @@ is reported as a result rather than hidden as a blank.
 
 ## Overview
 
-### UI (JavaFX)
+### UI - JavaFX
 
 <img width="1235" height="848" src="https://github.com/user-attachments/assets/f7d4f927-9c50-4aae-b3e7-a04e91881834" />
 
@@ -93,7 +93,7 @@ python -m pgx.cli --db data/cypgx.db --gene CYP2C19=*2/*5 --gene CYP2D6=*4/*4 --
 ```
 
 ```bash
-python -m pgx.cli --db data/cypgx.db --batch cohort.csv --out reports.jsonl
+python -m pgx.cli --db data/cypgx.db --batch data/cohort.csv --out reports.jsonl
 ```
 
 **HTTP service** — FastAPI on loopback:
@@ -165,7 +165,9 @@ packaging/         build scripts and PyInstaller spec
 
 ## Tests
 
-TBA.
+```bash
+python -m unittest discover -s tests -q
+```
 
 No network and no `data/cypgx.db` required, the suite builds its own fixture.
 

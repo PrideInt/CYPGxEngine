@@ -17,6 +17,14 @@
 # ANALYSIS
 !/tests/**/*.py
 !/tools/*.py
+
+# The reference cohort the tools in tools/ read. 14 KB, and without it
+# panel_experiment, posterior_experiment and getrm_coverage cannot run
+# from a clone: the only other route is the CDC workbook, which is not
+# in this repository and is not fetched by any script here.
+!/data/getrm_diplotypes.csv
+!/data/getrm_normalized.csv
+!/data/cohort.csv
 #!/docs/**/*.md
 #!/docs/**/*.tex
 
@@ -25,6 +33,7 @@
 !/.gitattributes
 !/LICENSE
 !/README.md
+!/.github/workflows/*.yml
 
 __pycache__/
 *.pyc
@@ -33,6 +42,8 @@ __pycache__/
 /client/target/
 /build/
 /dist/
+!/data/getrm_diplotypes.csv
+!/data/getrm_normalized.csv
 #/results/*
 #!/results/panel_accuracy.csv
 #!/results/panel_confusion.csv

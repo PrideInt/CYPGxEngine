@@ -83,7 +83,6 @@ public class PgxApp extends Application {
         bootstrapEngine();
     }
 
-    /** Closes the engine this application started. Not one it merely found. */
     @Override
     public void stop() {
         EngineProcess started = bundled;
@@ -107,6 +106,7 @@ public class PgxApp extends Application {
             @Override
             protected String call() throws Exception {
                 Path executable = EngineProcess.locate();
+
                 if (executable != null) {
                     EngineProcess started = EngineProcess.start(executable);
                     bundled = started;
@@ -117,12 +117,14 @@ public class PgxApp extends Application {
         };
         task.setOnSucceeded(event -> {
             String url = task.getValue();
+
             if (url == null) {
                 setStatus("Offline stub. No engine found, so nothing is contacted.");
                 return;
             }
             liveUrl = url;
             engine = new HttpPgxEngine(url);
+
             buildEntry();
             selectQuietly(LIVE);
             setStatus(bundled == null
@@ -190,8 +192,6 @@ public class PgxApp extends Application {
     }
 
     private Region statusBar() {
-        // Authorship, not endorsement. A course and an institution are facts
-        // about who wrote this; they are not a claim that anyone approved it.
         Label attribution = new Label("BMI 530 · Stony Brook University");
         attribution.getStyleClass().add("attribution");
 

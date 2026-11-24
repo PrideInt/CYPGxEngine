@@ -142,8 +142,6 @@ public class ReportView extends VBox {
         } else {
             field(fields, "EHR priority", "none published by CPIC for this diplotype", true);
         }
-        // Worth showing: for CYP2D6 this is the activity-score bucket the
-        // recommendation was matched on, not the diplotype itself.
         if (gene.lookupKey() != null && !gene.lookupKey().isEmpty()) {
             field(fields, "lookup key", String.join("  ·  ",
                     gene.lookupKey().entrySet().stream()
@@ -186,7 +184,6 @@ public class ReportView extends VBox {
             detail.setManaged(open);
             detail.setVisible(open);
             twisty.setText(open ? "▾" : "▸");
-            // The summary is a truncation of the text now shown in full below it.
             summary.setManaged(!open);
             summary.setVisible(!open);
         });
@@ -207,7 +204,9 @@ public class ReportView extends VBox {
         }
 
         // The genes and the evidence level are on the row's meta line, which
-        // stays visible when this opens. Only what is not already up there.
+        // stays visible when this opens. Population is repeated here because
+        // the meta line carries it only when it distinguishes one row from
+        // another; this shows it for every drug, "general" included.
         GridPane fields = fields();
         field(fields, "population", nullSafe(drug.population()), false);
         field(fields, "source", nullSafe(drug.source()), false);
@@ -259,7 +258,6 @@ public class ReportView extends VBox {
         return box;
     }
 
-    /** First sentence, or a hard cut — enough to tell the rows apart. */
     private static String summarise(String text) {
         if (text == null || text.isBlank()) {
             return "—";
@@ -278,7 +276,25 @@ public class ReportView extends VBox {
     private static String meta(PgxReport.DrugRecommendation drug) {
         String genes = drug.genes() == null || drug.genes().isEmpty()
                 ? "no gene" : String.join(" + ", drug.genes());
-        return "decided by " + genes + "   ·   level " + nullSafe(drug.cpicLevel());
+        String line = "decided by " + genes + "   ·   level " + nullSafe(drug.cpicLevel());
+
+        // CPIC splits some drugs into several rows that differ only by the
+        // population or indication they apply to: atomoxetine and voriconazole
+        // by age, clopidogrel three ways by indication ("CVI ACS PCI", "CVI
+        // non-ACS non-PCI", "NVI"). One report therefore carries repeated drug
+        // names, and without this qualifier they are indistinguishable until
+        // each row is opened. "general" is the common case and says nothing, so
+        // it stays in the detail panel rather than on every row.
+        //
+        // Trimmed because CPIC's own values carry trailing spaces.
+        String population = drug.population() == null
+                ? null : drug.population().trim();
+
+        if (population != null && !population.isEmpty()
+                && !population.equalsIgnoreCase("general")) {
+            line = line + "   ·   " + population;
+        }
+        return line;
     }
 
     private static GridPane fields() {

@@ -60,6 +60,7 @@ public final class Theme {
                     continue;
                 }
                 Image image = new Image(in);
+                
                 if (!image.isError()) {
                     icons.add(image);
                 }
@@ -84,6 +85,7 @@ public final class Theme {
                 return null;
             }
             Image image = new Image(in);
+
             if (image.isError()) {
                 System.err.println("brand/logo.png could not be decoded; ignoring it.");
                 return null;

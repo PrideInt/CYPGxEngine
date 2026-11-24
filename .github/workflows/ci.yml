@@ -1,0 +1,52 @@
+name: CI
+
+# This repository's claim is that a clean machine can build and test it.
+# These jobs check that on every push instead of leaving it as prose: nothing
+# here is cached from a developer's laptop, and neither job needs the
+# knowledge base, the GeT-RM cohort or any network access beyond the package
+# registries.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  engine:
+    name: Engine tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Tests
+        # No network and no data/cypgx.db: the suite builds its own fixture.
+        run: python -m unittest discover -s tests -q
+
+  client:
+    name: Client compiles (Java 17 target)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Compile
+        # compile, not javafx:run: the client needs a display, and `compile`
+        # is what copies the fonts and stylesheet resources.
+        run: mvn -B -f client/pom.xml clean compile

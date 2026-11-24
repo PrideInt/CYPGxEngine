@@ -86,8 +86,9 @@ public record PgxReport(
         /**
          * True where the guideline declines to advise.
          *
-         * This is an answer, not a blank: for 52% of genotyped samples CPIC
-         * returns exactly this for venlafaxine.
+         * This is an answer, not a blank: of the 268 reference-cohort samples
+         * for which a venlafaxine recommendation is returned at all, 139
+         * (51.9%) are exactly this.
          */
         public boolean isAbstention() {
             return "No Recommendation".equalsIgnoreCase(classification);
